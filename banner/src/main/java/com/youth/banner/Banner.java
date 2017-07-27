@@ -2,6 +2,7 @@ package com.youth.banner;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.DrawableRes;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -33,43 +34,43 @@ import static android.support.v4.view.ViewPager.OnPageChangeListener;
 import static android.support.v4.view.ViewPager.PageTransformer;
 
 public class Banner extends FrameLayout implements OnPageChangeListener {
-    public String tag = "banner";
-    private int mIndicatorMargin = BannerConfig.PADDING_SIZE;
+    public  String tag              = "banner";
+    private int    mIndicatorMargin = BannerConfig.PADDING_SIZE;
     private int mIndicatorWidth;
     private int mIndicatorHeight;
     private int indicatorSize;
-    private int bannerStyle = BannerConfig.CIRCLE_INDICATOR;
-    private int delayTime = BannerConfig.TIME;
-    private int scrollTime = BannerConfig.DURATION;
-    private boolean isAutoPlay = BannerConfig.IS_AUTO_PLAY;
-    private boolean isScroll = BannerConfig.IS_SCROLL;
-    private int mIndicatorSelectedResId = R.drawable.gray_radius;
-    private int mIndicatorUnselectedResId = R.drawable.white_radius;
-    private int mLayoutResId = R.layout.banner;
+    private int     bannerStyle               = BannerConfig.CIRCLE_INDICATOR;
+    private int     delayTime                 = BannerConfig.TIME;
+    private int     scrollTime                = BannerConfig.DURATION;
+    private boolean isAutoPlay                = BannerConfig.IS_AUTO_PLAY;
+    private boolean isScroll                  = BannerConfig.IS_SCROLL;
+    private int     mIndicatorSelectedResId   = R.drawable.gray_radius;
+    private int     mIndicatorUnselectedResId = R.drawable.white_radius;
+    private int     mLayoutResId              = R.layout.banner;
     private int titleHeight;
     private int titleBackground;
     private int titleTextColor;
     private int titleTextSize;
     private int count = 0;
     private int currentItem;
-    private int gravity = -1;
+    private int gravity      = -1;
     private int lastPosition = 1;
-    private int scaleType = 1;
-    private List<String> titles;
-    private List imageUrls;
-    private List<View> imageViews;
+    private int scaleType    = 1;
+    private List<String>    titles;
+    private List            imageUrls;
+    private List<View>      imageViews;
     private List<ImageView> indicatorImages;
-    private Context context;
+    private Context         context;
     private BannerViewPager viewPager;
-    private TextView bannerTitle, numIndicatorInside, numIndicator;
+    private TextView        bannerTitle, numIndicatorInside, numIndicator;
     private LinearLayout indicator, indicatorInside, titleView;
-    private ImageLoaderInterface imageLoader;
-    private BannerPagerAdapter adapter;
-    private OnPageChangeListener mOnPageChangeListener;
-    private BannerScroller mScroller;
+    private ImageLoaderInterface  imageLoader;
+    private BannerPagerAdapter    adapter;
+    private OnPageChangeListener  mOnPageChangeListener;
+    private BannerScroller        mScroller;
     private OnBannerClickListener bannerListener;
-    private OnBannerListener listener;
-    private DisplayMetrics dm;
+    private OnBannerListener      listener;
+    private DisplayMetrics        dm;
 
     private WeakHandler handler = new WeakHandler();
 
@@ -291,8 +292,10 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
 
     private void setBannerStyleUI() {
         int visibility;
-        if (count > 1) visibility = View.VISIBLE;
-        else visibility = View.GONE;
+        if (count > 1)
+            visibility = View.VISIBLE;
+        else
+            visibility = View.GONE;
         switch (bannerStyle) {
             case BannerConfig.CIRCLE_INDICATOR:
                 indicator.setVisibility(visibility);
@@ -452,7 +455,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
         public void run() {
             if (count > 1 && isAutoPlay) {
                 currentItem = currentItem % (count + 1) + 1;
-//                Log.i(tag, "curr:" + currentItem + " count:" + count);
+                //                Log.i(tag, "curr:" + currentItem + " count:" + count);
                 if (currentItem == 1) {
                     viewPager.setCurrentItem(currentItem, false);
                     handler.post(task);
@@ -466,7 +469,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-//        Log.i(tag, ev.getAction() + "--" + isAutoPlay);
+        //        Log.i(tag, ev.getAction() + "--" + isAutoPlay);
         if (isAutoPlay) {
             int action = ev.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
@@ -581,8 +584,10 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
             indicatorImages.get((position - 1 + count) % count).setImageResource(mIndicatorSelectedResId);
             lastPosition = position;
         }
-        if (position == 0) position = count;
-        if (position > count) position = 1;
+        if (position == 0)
+            position = count;
+        if (position > count)
+            position = 1;
         switch (bannerStyle) {
             case BannerConfig.CIRCLE_INDICATOR:
                 break;
@@ -626,5 +631,31 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
 
     public void releaseBanner() {
         handler.removeCallbacksAndMessages(null);
+    }
+
+    /**
+     * 更新指示器圆形按钮的宽度，高度
+     */
+    public void updateIndicator(int size) {
+        //    private int mIndicatorWidth;
+        //    private int mIndicatorHeight;
+        mIndicatorWidth = size;
+        mIndicatorHeight = size;
+    }
+
+    /**
+     * 指示器选中效果
+     */
+    public void updateIndicatorSelectedResId(@DrawableRes int resId) {
+        mIndicatorSelectedResId = resId;
+
+    }
+
+    /**
+     * 指示器未选中效果
+     */
+    public void updateIndicatorNormalResId(@DrawableRes int resId) {
+        mIndicatorUnselectedResId = resId;
+
     }
 }
