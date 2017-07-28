@@ -2,6 +2,10 @@ package com.youth.banner;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -72,7 +76,16 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
     private OnBannerListener      listener;
     private DisplayMetrics        dm;
 
+    protected int[] mIndicatorLayoutPadding;
+
     private WeakHandler handler = new WeakHandler();
+
+    ///////////////////////////////////////////////////////////////////////////
+    // 背景
+    ///////////////////////////////////////////////////////////////////////////
+    protected GradientDrawable backgroundGradientDrawable;
+    protected float            mCorners[];
+    protected Path backgroundPath = new Path();
 
     public Banner(Context context) {
         this(context, null);
@@ -92,6 +105,33 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
         dm = context.getResources().getDisplayMetrics();
         indicatorSize = dm.widthPixels / 80;
         initView(context, attrs);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        if (mCorners != null) {
+            //背景
+            // compute the path
+            backgroundPath.reset();
+            RectF backgroundRect = new RectF();
+            backgroundRect.set(0, 0, w, h);
+            if (mCorners.length == 1) {
+                backgroundPath.addRoundRect(backgroundRect, mCorners[0], mCorners[0], Path.Direction.CW);
+            } else if (mCorners.length > 1) {
+                backgroundPath.addRoundRect(backgroundRect, mCorners, Path.Direction.CW);
+            }
+            backgroundPath.close();
+        }
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        int save = canvas.save();
+        canvas.clipPath(backgroundPath);
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
     }
 
     private void initView(Context context, AttributeSet attrs) {
@@ -636,9 +676,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
     /**
      * 更新指示器圆形按钮的宽度，高度
      */
-    public void updateIndicator(int size) {
-        //    private int mIndicatorWidth;
-        //    private int mIndicatorHeight;
+    public void setIndicator(int size) {
         mIndicatorWidth = size;
         mIndicatorHeight = size;
     }
@@ -646,16 +684,52 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
     /**
      * 指示器选中效果
      */
-    public void updateIndicatorSelectedResId(@DrawableRes int resId) {
+    public void setIndicatorSelectedResId(@DrawableRes int resId) {
         mIndicatorSelectedResId = resId;
-
     }
 
     /**
      * 指示器未选中效果
      */
-    public void updateIndicatorNormalResId(@DrawableRes int resId) {
+    public void setIndicatorNormalResId(@DrawableRes int resId) {
         mIndicatorUnselectedResId = resId;
+    }
 
+    public void setIndicatorLayoutPadding(int... padding) {
+        if (mIndicatorLayoutPadding == null) {
+            mIndicatorLayoutPadding = new int[4];
+        }
+
+        for (int i = 0; i < padding.length; i++) {
+            mIndicatorLayoutPadding[i] = padding[i];
+        }
+
+        indicator.setPadding(mIndicatorLayoutPadding[0], mIndicatorLayoutPadding[1]
+                , mIndicatorLayoutPadding[2], mIndicatorLayoutPadding[3]);
+    }
+
+    public void setIndicatorMargin(int margin) {
+        this.mIndicatorMargin = margin;
+    }
+
+    public void setCorners(float... corners) {
+        //        if (backgroundGradientDrawable == null) {
+        //            backgroundGradientDrawable = new GradientDrawable();
+        //            backgroundGradientDrawable.setColor(Color.RED);
+        //        }
+        mCorners = corners;
+        invalidate();
+        //        if (corners.length == 1) {
+        //            backgroundGradientDrawable.setCornerRadius(mCorners[0]);
+        //        } else {
+        //            backgroundGradientDrawable.setCornerRadii(mCorners);
+        //        }
+        //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        //            setBackground(backgroundGradientDrawable);
+        //        } else {
+        //            setBackgroundDrawable(backgroundGradientDrawable);
+        //        }
+        //
+        //        setClipChildren(true);
     }
 }
