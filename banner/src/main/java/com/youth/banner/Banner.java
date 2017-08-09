@@ -2,13 +2,10 @@ package com.youth.banner;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.RectF;
-import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -18,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -37,7 +33,7 @@ import java.util.List;
 import static android.support.v4.view.ViewPager.OnPageChangeListener;
 import static android.support.v4.view.ViewPager.PageTransformer;
 
-public class Banner extends FrameLayout implements OnPageChangeListener {
+public class Banner extends CardView implements OnPageChangeListener {
     public  String tag              = "banner";
     private int    mIndicatorMargin = BannerConfig.PADDING_SIZE;
     private int mIndicatorWidth;
@@ -83,9 +79,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
     ///////////////////////////////////////////////////////////////////////////
     // 背景
     ///////////////////////////////////////////////////////////////////////////
-    protected GradientDrawable backgroundGradientDrawable;
     protected float            mCorners[];
-    protected Path backgroundPath = new Path();
 
     public Banner(Context context) {
         this(context, null);
@@ -105,33 +99,6 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
         dm = context.getResources().getDisplayMetrics();
         indicatorSize = dm.widthPixels / 80;
         initView(context, attrs);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        if (mCorners != null) {
-            //背景
-            // compute the path
-            backgroundPath.reset();
-            RectF backgroundRect = new RectF();
-            backgroundRect.set(0, 0, w, h);
-            if (mCorners.length == 1) {
-                backgroundPath.addRoundRect(backgroundRect, mCorners[0], mCorners[0], Path.Direction.CW);
-            } else if (mCorners.length > 1) {
-                backgroundPath.addRoundRect(backgroundRect, mCorners, Path.Direction.CW);
-            }
-            backgroundPath.close();
-        }
-    }
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        int save = canvas.save();
-        canvas.clipPath(backgroundPath);
-        super.dispatchDraw(canvas);
-        canvas.restoreToCount(save);
     }
 
     private void initView(Context context, AttributeSet attrs) {
@@ -713,23 +680,9 @@ public class Banner extends FrameLayout implements OnPageChangeListener {
     }
 
     public void setCorners(float... corners) {
-        //        if (backgroundGradientDrawable == null) {
-        //            backgroundGradientDrawable = new GradientDrawable();
-        //            backgroundGradientDrawable.setColor(Color.RED);
-        //        }
         mCorners = corners;
-        invalidate();
-        //        if (corners.length == 1) {
-        //            backgroundGradientDrawable.setCornerRadius(mCorners[0]);
-        //        } else {
-        //            backgroundGradientDrawable.setCornerRadii(mCorners);
-        //        }
-        //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-        //            setBackground(backgroundGradientDrawable);
-        //        } else {
-        //            setBackgroundDrawable(backgroundGradientDrawable);
-        //        }
-        //
-        //        setClipChildren(true);
+        if (mCorners != null && mCorners.length > 0) {
+            setRadius(mCorners[0]);
+        }
     }
 }
